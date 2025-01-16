@@ -147,3 +147,6 @@ export const STARTER_TEMPLATES: Template[] = [
     icon: 'i-bolt:angular',
   },
 ];
+
+export const CUSTOM_DEFAULT_MODEL = 'anthropic/claude-3.5-sonnet';
+export const CUSTOM_DEFAULT_PROVIDER = 'OpenRouter';

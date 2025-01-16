@@ -12,7 +12,7 @@ import { useMessageParser, usePromptEnhancer, useShortcuts, useSnapScroll } from
 import { description, useChatHistory } from '~/lib/persistence';
 import { chatStore } from '~/lib/stores/chat';
 import { workbenchStore } from '~/lib/stores/workbench';
-import { DEFAULT_MODEL, DEFAULT_PROVIDER, PROMPT_COOKIE_KEY, PROVIDER_LIST } from '~/utils/constants';
+import { CUSTOM_DEFAULT_MODEL, CUSTOM_DEFAULT_PROVIDER, PROMPT_COOKIE_KEY, PROVIDER_LIST } from '~/utils/constants';
 import { cubicEasingFn } from '~/utils/easings';
 import { createScopedLogger, renderLogger } from '~/utils/logger';
 import { BaseChat } from './BaseChat';
@@ -124,11 +124,11 @@ export const ChatImpl = memo(
 
     const [model, setModel] = useState(() => {
       const savedModel = Cookies.get('selectedModel');
-      return savedModel || DEFAULT_MODEL;
+      return savedModel || CUSTOM_DEFAULT_MODEL;
     });
     const [provider, setProvider] = useState(() => {
-      const savedProvider = Cookies.get('selectedProvider');
-      return (PROVIDER_LIST.find((p) => p.name === savedProvider) || DEFAULT_PROVIDER) as ProviderInfo;
+      const savedProvider = CUSTOM_DEFAULT_PROVIDER;
+      return (PROVIDER_LIST.find((p) => p.name === savedProvider) || CUSTOM_DEFAULT_PROVIDER) as ProviderInfo;
     });
 
     const { showChat } = useStore(chatStore);
