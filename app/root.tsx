@@ -5,13 +5,14 @@ import tailwindReset from '@unocss/reset/tailwind-compat.css?url';
 import { themeStore } from './lib/stores/theme';
 import { stripIndents } from './utils/stripIndent';
 import { createHead } from 'remix-island';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import reactToastifyStyles from 'react-toastify/dist/ReactToastify.css?url';
 import globalStyles from './styles/index.scss?url';
 import xtermStyles from '@xterm/xterm/css/xterm.css?url';
 
 import 'virtual:uno.css';
+import { ToastContainer } from 'react-toastify';
 
 export const links: LinksFunction = () => [
   {
@@ -70,11 +71,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
   }, [theme]);
 
   return (
-    <>
+    <div id="app-root">
       {children}
       <ScrollRestoration />
       <Scripts />
-    </>
+      <ToastContainer position="bottom-right" theme={theme as "light" | "dark"} />
+    </div>
   );
 }
 
