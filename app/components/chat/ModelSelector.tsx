@@ -80,27 +80,34 @@ export const ModelSelector = ({
           </option>
         ))}
       </select>
-      <select
-        key={provider?.name}
-        value={model}
-        onChange={(e) => setModel?.(e.target.value)}
-        className="flex-1 p-2 rounded-lg border border-bolt-elements-borderColor bg-bolt-elements-prompt-background text-bolt-elements-textPrimary focus:outline-none focus:ring-2 focus:ring-bolt-elements-focus transition-all lg:max-w-[100%]"
-        disabled={modelLoading === 'all' || modelLoading === provider?.name}
-      >
-        {modelLoading == 'all' || modelLoading == provider?.name ? (
-          <option key={0} value="">
-            Loading...
-          </option>
-        ) : (
-          [...modelList]
-            .filter((e) => e.provider == provider?.name && e.name)
-            .map((modelOption, index) => (
-              <option key={index} value={modelOption.name}>
-                {modelOption.label}
-              </option>
-            ))
-        )}
-      </select>
+      <div className="relative flex-1">
+        <select
+          key={provider?.name}
+          value={model}
+          onChange={(e) => setModel?.(e.target.value)}
+          className="w-full p-2 pr-8 rounded-lg border border-bolt-elements-borderColor bg-bolt-elements-prompt-background text-bolt-elements-textPrimary focus:outline-none focus:ring-2 focus:ring-bolt-elements-focus transition-all appearance-none"
+          disabled={modelLoading === 'all' || modelLoading === provider?.name}
+        >
+          {modelLoading == 'all' || modelLoading == provider?.name ? (
+            <option key={0} value="">
+              Loading...
+            </option>
+          ) : (
+            [...modelList]
+              .filter((e) => e.provider == provider?.name && e.name)
+              .map((modelOption, index) => (
+                <option key={index} value={modelOption.name}>
+                  {modelOption.label}
+                </option>
+              ))
+          )}
+        </select>
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+          </svg>
+        </div>
+      </div>
     </div>
   );
 };
