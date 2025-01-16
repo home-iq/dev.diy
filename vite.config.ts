@@ -16,7 +16,6 @@ const getGitHash = () => {
   }
 };
 
-
 export default defineConfig((config) => {
   return {
     define: {
@@ -44,7 +43,15 @@ export default defineConfig((config) => {
       chrome129IssuePlugin(),
       config.mode === 'production' && optimizeCssModules({ apply: 'build' }),
     ],
-    envPrefix: ["VITE_","OPENAI_LIKE_API_BASE_URL", "OLLAMA_API_BASE_URL", "LMSTUDIO_API_BASE_URL","TOGETHER_API_BASE_URL"],
+    envPrefix: [
+      "VITE_",
+      "OPENAI_LIKE_API_BASE_URL", 
+      "OLLAMA_API_BASE_URL", 
+      "LMSTUDIO_API_BASE_URL",
+      "TOGETHER_API_BASE_URL",
+      "OPEN_ROUTER_API_KEY",
+      "BOLT_PASSWORD"
+    ],
     css: {
       preprocessorOptions: {
         scss: {

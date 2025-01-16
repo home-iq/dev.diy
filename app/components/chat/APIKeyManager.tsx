@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IconButton } from '~/components/ui/IconButton';
 import type { ProviderInfo } from '~/types/model';
 import Cookies from 'js-cookie';
@@ -32,6 +32,16 @@ export function getApiKeysFromCookies() {
 export const APIKeyManager: React.FC<APIKeyManagerProps> = ({ provider, apiKey, setApiKey }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempKey, setTempKey] = useState(apiKey);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // This is how OPEN_ROUTER_API_KEY is accessed
+    const key = import.meta.env.OPEN_ROUTER_API_KEY;
+    if (key) {
+      setApiKey(key);
+    }
+  }, []);
 
   const handleSave = () => {
     setApiKey(tempKey);

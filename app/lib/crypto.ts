@@ -2,57 +2,71 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 const IV_LENGTH = 16;
 
-export async function encrypt(key: string, data: string) {
+function bufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  const binString = Array.from(bytes, (byte) => String.fromCharCode(byte)).join('');
+  return btoa(binString);
+}
+
+function base64ToBuffer(base64: string): Uint8Array {
+  const binString = atob(base64);
+  return Uint8Array.from(binString, (char) => char.charCodeAt(0));
+}
+
+async function getKey(keyString: string): Promise<CryptoKey> {
+  // Create a consistent key by hashing the string
+  const keyData = await crypto.subtle.digest(
+    'SHA-256',
+    encoder.encode(keyString)
+  );
+  
+  return await crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'AES-CBC' },
+    false,
+    ['encrypt', 'decrypt']
+  );
+}
+
+export async function encrypt(key: string, data: string): Promise<string> {
   const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
   const cryptoKey = await getKey(key);
 
-  const ciphertext = await crypto.subtle.encrypt(
+  const encrypted = await crypto.subtle.encrypt(
     {
       name: 'AES-CBC',
       iv,
     },
     cryptoKey,
-    encoder.encode(data),
+    encoder.encode(data)
   );
 
-  const bundle = new Uint8Array(IV_LENGTH + ciphertext.byteLength);
+  // Combine IV and encrypted data
+  const combined = new Uint8Array(iv.length + encrypted.byteLength);
+  combined.set(new Uint8Array(encrypted), 0);
+  combined.set(iv, encrypted.byteLength);
 
-  bundle.set(new Uint8Array(ciphertext));
-  bundle.set(iv, ciphertext.byteLength);
-
-  return decodeBase64(bundle);
+  return bufferToBase64(combined);
 }
 
-export async function decrypt(key: string, payload: string) {
-  const bundle = encodeBase64(payload);
-
-  const iv = new Uint8Array(bundle.buffer, bundle.byteLength - IV_LENGTH);
-  const ciphertext = new Uint8Array(bundle.buffer, 0, bundle.byteLength - IV_LENGTH);
+export async function decrypt(key: string, encryptedData: string): Promise<string> {
+  const combined = base64ToBuffer(encryptedData);
+  
+  // Split IV and data
+  const iv = combined.slice(-IV_LENGTH);
+  const data = combined.slice(0, -IV_LENGTH);
 
   const cryptoKey = await getKey(key);
 
-  const plaintext = await crypto.subtle.decrypt(
+  const decrypted = await crypto.subtle.decrypt(
     {
       name: 'AES-CBC',
       iv,
     },
     cryptoKey,
-    ciphertext,
+    data
   );
 
-  return decoder.decode(plaintext);
-}
-
-async function getKey(key: string) {
-  return await crypto.subtle.importKey('raw', encodeBase64(key), { name: 'AES-CBC' }, false, ['encrypt', 'decrypt']);
-}
-
-function decodeBase64(encoded: Uint8Array) {
-  const byteChars = Array.from(encoded, (byte) => String.fromCodePoint(byte));
-
-  return btoa(byteChars.join(''));
-}
-
-function encodeBase64(data: string) {
-  return Uint8Array.from(atob(data), (ch) => ch.codePointAt(0)!);
+  return decoder.decode(decrypted);
 }
